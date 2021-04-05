@@ -9,7 +9,7 @@ import com.example.mymovieskotlin.pojo.MovieInfo
 
 @Database(
     entities = [MovieInfo::class, FavouriteMovieInfo::class],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

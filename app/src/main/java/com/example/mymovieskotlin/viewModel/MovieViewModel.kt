@@ -3,48 +3,113 @@ package com.example.mymovieskotlin.viewModel
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import com.example.mymovieskotlin.api.ApiFactory
 import com.example.mymovieskotlin.database.AppDatabase
 import com.example.mymovieskotlin.pojo.FavouriteMovieInfo
 import com.example.mymovieskotlin.pojo.MovieInfo
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.*
 
 class MovieViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
     private val compositeDisposable = CompositeDisposable()
 
+    private var viewModelJob = Job()
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
     val movies = db.movieInfoDao().getAllMovies()
-    val favouriteMovieInfo = db.movieInfoDao().getAllFavouritesMovies()
+    val favouriteMoviesInfo = db.movieInfoDao().getAllFavouritesMovies()
 
-    fun deleteFavouriteMovie(favouriteMovieInfo: FavouriteMovieInfo?) {
-       db.movieInfoDao().deleteFavouriteMovie(favouriteMovieInfo)
+    private var favouriteMovie: FavouriteMovieInfo? = null
+    private lateinit var movie: MovieInfo
+
+
+    fun onDeleteFavouriteMovie(favouriteMovieInfo: FavouriteMovieInfo) {
+        uiScope.launch {
+            deleteFavouriteMovie(favouriteMovieInfo)
+        }
     }
 
-    fun insertFavouriteMovie(favouriteMovieInfo: MovieInfo?) {
-        db.movieInfoDao().insertFavouriteMovie(favouriteMovieInfo)
+    private suspend fun deleteFavouriteMovie(favouriteMovieInfo: FavouriteMovieInfo) {
+        withContext(Dispatchers.IO) {
+            db.movieInfoDao().deleteFavouriteMovie(favouriteMovieInfo)
+        }
     }
 
-    fun getFavouriteMovieById(id: Int): LiveData<FavouriteMovieInfo> {
-        return db.movieInfoDao().getFavouriteMovieById(id)
+    fun onInsertFavouriteMovie(favouriteMovieInfo: MovieInfo) {
+        uiScope.launch {
+            insertFavouriteMovie(favouriteMovieInfo)
+        }
     }
 
-    fun deleteMovie(movieInfo: MovieInfo) {
-        db.movieInfoDao().deleteMovie(movieInfo)
+    private suspend fun insertFavouriteMovie(favouriteMovieInfo: MovieInfo) {
+        withContext(Dispatchers.IO) {
+            db.movieInfoDao().insertFavouriteMovie(favouriteMovieInfo)
+        }
     }
 
-    fun insertMovie(movieInfo: MovieInfo) {
-        db.movieInfoDao().insertMovie(movieInfo)
+    fun onGetFavouriteMovieById(id: Int): FavouriteMovieInfo? {
+        uiScope.launch {
+            favouriteMovie = getFavouriteMovieById(id)
+        }
+        return favouriteMovie
     }
 
-    fun deleteAllMovies() {
-        db.movieInfoDao().deleteAllMovies()
+    private suspend fun getFavouriteMovieById(id: Int): FavouriteMovieInfo? {
+        return withContext(Dispatchers.IO) {
+            db.movieInfoDao().getFavouriteMovieById(id)
+        }
     }
 
-    fun getMovieById(id: Int): LiveData<MovieInfo> {
-        return db.movieInfoDao().getMovieById(id)
+    fun onDeleteMovie(movieInfo: MovieInfo) {
+        uiScope.launch {
+            deleteMovie(movieInfo)
+        }
+    }
+
+    private suspend fun deleteMovie(movieInfo: MovieInfo) {
+        withContext(Dispatchers.IO) {
+            db.movieInfoDao().deleteMovie(movieInfo)
+        }
+    }
+
+    fun onInsertMovie(movieInfo: MovieInfo) {
+        uiScope.launch {
+            insertMovie(movieInfo)
+        }
+    }
+
+    private suspend fun insertMovie(movieInfo: MovieInfo) {
+        withContext(Dispatchers.IO) {
+            db.movieInfoDao().insertMovie(movieInfo)
+        }
+    }
+
+    fun onDeleteAllMovies() {
+        uiScope.launch {
+            deleteAllMovies()
+        }
+    }
+
+    private suspend fun deleteAllMovies() {
+        withContext(Dispatchers.IO) {
+            db.movieInfoDao().deleteAllMovies()
+        }
+    }
+
+    fun onGetMovieById(id: Int): MovieInfo {
+        uiScope.async {
+            movie = getMovieById(id)
+        }
+        return movie
+    }
+
+    private suspend fun getMovieById(id: Int): MovieInfo {
+        return withContext(Dispatchers.IO) {
+            db.movieInfoDao().getMovieById(id)
+        }
     }
 
     fun loadData(sort: String, page: Int) {
@@ -65,5 +130,6 @@ class MovieViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         compositeDisposable.dispose()
+        viewModelJob.cancel()
     }
 }

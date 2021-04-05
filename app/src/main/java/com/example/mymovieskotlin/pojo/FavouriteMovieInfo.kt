@@ -59,16 +59,4 @@ data class FavouriteMovieInfo(
     @SerializedName("vote_count")
     @Expose
     val voteCount: Int? = null
-) {
-    constructor(movie: MovieInfo) : this() {
-            movie.id
-            movie.voteCount
-            movie.title
-            movie.originalTitle
-            movie.overview
-            movie.posterPath
-            movie.backdropPath
-            movie.voteAverage
-            movie.releaseDate
-    }
-}
+)

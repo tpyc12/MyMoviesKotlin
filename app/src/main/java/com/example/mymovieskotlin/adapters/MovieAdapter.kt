@@ -9,8 +9,6 @@ import com.example.mymovieskotlin.api.ApiService.Companion.SMALL_POSTER_SIZE
 import com.example.mymovieskotlin.databinding.MovieItemBinding
 import com.example.mymovieskotlin.pojo.MovieInfo
 import com.squareup.picasso.Picasso
-import java.util.*
-import kotlin.collections.ArrayList
 
 class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
@@ -24,11 +22,11 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
     var onReachEndListener: OnReachEndListener? = null
 
-    interface OnPosterClickListener{
+    interface OnPosterClickListener {
         fun onPosterClick(position: Int)
     }
 
-    interface OnReachEndListener{
+    interface OnReachEndListener {
         fun onReachEnd()
     }
 
@@ -39,7 +37,7 @@ class MovieAdapter : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        if (position > movieInfoList.size - 4 && onReachEndListener != null){
+        if (position > movieInfoList.size - 4 && onReachEndListener != null) {
             onReachEndListener?.onReachEnd()
         }
         val movie = movieInfoList[position]

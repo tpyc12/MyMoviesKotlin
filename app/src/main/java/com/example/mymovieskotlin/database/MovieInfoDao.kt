@@ -13,11 +13,11 @@ interface MovieInfoDao {
     @Query("SELECT * FROM favourite_movies")
     fun getAllFavouritesMovies(): LiveData<List<FavouriteMovieInfo>>
 
-    @Query("SELECT * FROM movies WHERE id ==:movieId ")
-    fun getMovieById(movieId: Int): LiveData<MovieInfo>
+    @Query("SELECT * FROM movies WHERE id =:movieId ")
+    fun getMovieById(movieId: Int): MovieInfo
 
-    @Query("SELECT * FROM favourite_movies WHERE id ==:movieId ")
-    fun getFavouriteMovieById(movieId: Int): LiveData<FavouriteMovieInfo>
+    @Query("SELECT * FROM favourite_movies WHERE id =:movieId ")
+    fun getFavouriteMovieById(movieId: Int): FavouriteMovieInfo?
 
     @Query("DELETE FROM movies")
     fun deleteAllMovies()
@@ -32,8 +32,8 @@ interface MovieInfoDao {
     fun deleteMovie(movie: MovieInfo)
 
     @Insert
-    fun insertFavouriteMovie(movie: MovieInfo?)
+    fun insertFavouriteMovie(movie: MovieInfo)
 
     @Delete
-    fun deleteFavouriteMovie(movie: FavouriteMovieInfo?)
+    fun deleteFavouriteMovie(movie: FavouriteMovieInfo)
 }

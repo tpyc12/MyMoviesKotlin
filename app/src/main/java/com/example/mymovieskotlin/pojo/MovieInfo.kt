@@ -15,6 +15,7 @@ data class MovieInfo (
     @SerializedName("backdrop_path")
     @Expose
     val backdropPath: String? = null,
+
     @PrimaryKey
     @SerializedName("id")
     @Expose
@@ -58,7 +59,7 @@ data class MovieInfo (
 
     @SerializedName("vote_count")
     @Expose
-    val voteCount: Int? = null
+    val voteCount: Int
 ){
     fun getFullImageUrl(posterSize: String): String {
         return BASE_IMAGE_URL + posterSize + posterPath
